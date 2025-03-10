@@ -39,3 +39,16 @@ function App() {
 }
 
 export default App;
+import React from 'react';
+import ChatInterface from './components/ChatInterface';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App min-h-screen bg-gray-100 p-4">
+      <ChatInterface />
+    </div>
+  );
+}
+
+export default App;

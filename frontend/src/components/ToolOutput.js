@@ -58,3 +58,49 @@ const ToolOutput = ({ tool, isLoading }) => {
 };
 
 export default ToolOutput;
+import React from 'react';
+import WeatherDisplay from './tools/WeatherDisplay';
+import DealershipAddress from './tools/DealershipAddress';
+import AppointmentAvailability from './tools/AppointmentAvailability';
+import AppointmentConfirmation from './tools/AppointmentConfirmation';
+
+const ToolOutput = ({ tool }) => {
+  const { name, input, output, isLoading } = tool;
+  
+  if (isLoading) {
+    return (
+      <div className="bg-gray-100 p-3 rounded-lg flex items-center my-2">
+        <div className="w-5 h-5 border-t-2 border-blue-500 rounded-full animate-spin mr-3"></div>
+        <span className="text-gray-600">Using tool: {name}...</span>
+      </div>
+    );
+  }
+  
+  if (!output) return null;
+
+  switch (name) {
+    case 'get_weather':
+      return <WeatherDisplay data={output} />;
+      
+    case 'get_dealership_address':
+      return <DealershipAddress data={output} />;
+      
+    case 'check_appointment_availability':
+      return <AppointmentAvailability data={output} />;
+      
+    case 'schedule_appointment':
+      return <AppointmentConfirmation data={output} />;
+      
+    default:
+      return (
+        <div className="bg-gray-100 p-3 rounded-lg my-2">
+          <div className="font-medium text-gray-700 mb-1">Tool: {name}</div>
+          <pre className="text-sm text-gray-600 whitespace-pre-wrap">
+            {JSON.stringify(output, null, 2)}
+          </pre>
+        </div>
+      );
+  }
+};
+
+export default ToolOutput;

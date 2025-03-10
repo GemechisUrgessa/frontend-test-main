@@ -60,3 +60,40 @@ const MessageList = ({ messages, currentResponse }) => {
 };
 
 export default MessageList;
+import React, { useEffect, useRef } from 'react';
+import Message from './Message';
+
+const MessageList = ({ messages }) => {
+  const messagesEndRef = useRef(null);
+  
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  
+  return (
+    <div className="flex-1 p-4 overflow-y-auto">
+      {messages.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-full text-gray-500">
+          <div className="text-xl mb-2">👋 Welcome to SuperCar Assistant</div>
+          <p className="text-center max-w-md">
+            I'm Lex, your virtual sales assistant. Ask me about our vehicles, 
+            dealership locations, or schedule a test drive!
+          </p>
+        </div>
+      ) : (
+        <>
+          {messages.map(message => (
+            <Message key={message.id} message={message} />
+          ))}
+          <div ref={messagesEndRef} />
+        </>
+      )}
+    </div>
+  );
+};
+
+export default MessageList;

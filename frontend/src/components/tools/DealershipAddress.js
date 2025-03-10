@@ -41,3 +41,26 @@ const DealershipAddress = ({ data }) => {
 };
 
 export default DealershipAddress;
+import React from 'react';
+
+const DealershipAddress = ({ data }) => {
+  if (!data) return null;
+  
+  const { name, address, phone, hours } = data;
+  
+  return (
+    <div className="bg-gradient-to-r from-gray-100 to-gray-50 p-4 rounded-lg shadow-sm my-2">
+      <h3 className="font-medium text-lg text-gray-800 mb-2">{name}</h3>
+      <div className="space-y-1 text-gray-700">
+        <p>{address}</p>
+        <p>Phone: {phone}</p>
+        <div className="mt-2">
+          <p className="font-medium">Business Hours:</p>
+          <p className="text-sm">{hours}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DealershipAddress;

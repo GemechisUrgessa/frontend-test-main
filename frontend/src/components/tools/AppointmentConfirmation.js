@@ -81,3 +81,25 @@ const AppointmentConfirmation = ({ data }) => {
 };
 
 export default AppointmentConfirmation;
+import React from 'react';
+
+const AppointmentConfirmation = ({ data }) => {
+  if (!data) return null;
+  
+  const { name, date, time, vehicle, confirmation_number } = data;
+  
+  return (
+    <div className="bg-gradient-to-r from-purple-100 to-purple-50 p-4 rounded-lg shadow-sm my-2">
+      <h3 className="font-medium text-lg text-purple-800 mb-2">Appointment Confirmed!</h3>
+      <div className="space-y-2 text-purple-700">
+        <p><span className="font-medium">Name:</span> {name}</p>
+        <p><span className="font-medium">Date:</span> {date}</p>
+        <p><span className="font-medium">Time:</span> {time}</p>
+        <p><span className="font-medium">Vehicle:</span> {vehicle}</p>
+        <p className="mt-3 font-medium">Confirmation #: <span className="text-purple-900">{confirmation_number}</span></p>
+      </div>
+    </div>
+  );
+};
+
+export default AppointmentConfirmation;

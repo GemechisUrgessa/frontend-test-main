@@ -57,3 +57,33 @@ const AppointmentAvailability = ({ data }) => {
 };
 
 export default AppointmentAvailability;
+import React from 'react';
+
+const AppointmentAvailability = ({ data, onSelect }) => {
+  if (!data || !data.slots || data.slots.length === 0) {
+    return (
+      <div className="bg-yellow-50 p-4 rounded-lg shadow-sm my-2">
+        <p className="text-yellow-700">No available appointment slots found.</p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="bg-gradient-to-r from-green-100 to-green-50 p-4 rounded-lg shadow-sm my-2">
+      <h3 className="font-medium text-lg text-green-800 mb-2">Available Appointment Slots</h3>
+      <div className="grid grid-cols-2 gap-2 mt-2">
+        {data.slots.map((slot, index) => (
+          <button
+            key={index}
+            className="bg-white hover:bg-green-50 text-green-700 border border-green-200 rounded py-2 px-3 text-sm transition-colors"
+            onClick={() => onSelect && onSelect(slot)}
+          >
+            {slot.date} at {slot.time}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default AppointmentAvailability;

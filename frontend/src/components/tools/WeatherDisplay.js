@@ -29,3 +29,24 @@ const WeatherDisplay = ({ data }) => {
 };
 
 export default WeatherDisplay;
+import React from 'react';
+
+const WeatherDisplay = ({ data }) => {
+  if (!data) return null;
+  
+  const { city, temperature, conditions } = data;
+  
+  return (
+    <div className="bg-gradient-to-r from-blue-100 to-blue-50 p-4 rounded-lg shadow-sm my-2">
+      <h3 className="font-medium text-lg text-blue-800 mb-2">Weather in {city}</h3>
+      <div className="flex items-center">
+        <div className="text-3xl font-bold text-blue-700">{temperature}°F</div>
+        <div className="ml-4">
+          <div className="text-blue-600">{conditions}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WeatherDisplay;

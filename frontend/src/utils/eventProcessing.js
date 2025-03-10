@@ -53,6 +53,27 @@ export const processStreamEvent = (currentResponse, event) => {
     case 'end':
       // Mark the response as complete
       updatedResponse.isComplete = true;
+      break;
+      
+    case 'error':
+      // Handle error events
+      updatedResponse.error = event.data.message || 'An error occurred';
+      updatedResponse.isComplete = true;
+      break;
+      
+    default:
+      console.warn('Unknown event type:', event.type);
+  }
+  
+  return updatedResponse;
+};
+      
+      updatedResponse.tools = updatedTools;
+      break;
+      
+    case 'end':
+      // Mark the response as complete
+      updatedResponse.isComplete = true;
       updatedResponse.isStreaming = false;
       break;
       

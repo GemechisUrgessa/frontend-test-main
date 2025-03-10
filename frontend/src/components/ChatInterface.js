@@ -130,3 +130,183 @@ const ChatInterface = ({ sessionId }) => {
 };
 
 export default ChatInterface;
+import React, { useState, useEffect, useRef } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import MessageList from './MessageList';
+import MessageInput from './MessageInput';
+import { processStreamEvent } from '../utils/eventProcessing';
+
+const ChatInterface = () => {
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState('');
+  const [error, setError] = useState(null);
+  const eventSourceRef = useRef(null);
+
+  // Initialize session ID on component mount
+  useEffect(() => {
+    const storedSessionId = localStorage.getItem('sessionId');
+    if (storedSessionId) {
+      setSessionId(storedSessionId);
+    } else {
+      const newSessionId = uuidv4();
+      localStorage.setItem('sessionId', newSessionId);
+      setSessionId(newSessionId);
+    }
+  }, []);
+
+  const handleSendMessage = async (content) => {
+    if (!content.trim()) return;
+    
+    // Add user message to chat
+    const userMessage = {
+      id: uuidv4(),
+      role: 'user',
+      content,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+    setError(null);
+    
+    // Create initial assistant message
+    const assistantMessageId = uuidv4();
+    const initialAssistantMessage = {
+      id: assistantMessageId,
+      role: 'assistant',
+      content: {
+        text: '',
+        tools: [],
+        isComplete: false
+      },
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, initialAssistantMessage]);
+    
+    try {
+      // Close any existing event source
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+      
+      // Make API request to backend
+      const response = await fetch('http://localhost:8000/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: content,
+          session_id: sessionId
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+      
+      // Set up event source for SSE
+      const eventSource = new EventSource(`http://localhost:8000/query?session_id=${sessionId}&query=${encodeURIComponent(content)}`, { withCredentials: true });
+      eventSourceRef.current = eventSource;
+      
+      // Initialize current assistant response
+      let currentResponse = {
+        text: '',
+        tools: [],
+        isComplete: false
+      };
+      
+      // Handle incoming events
+      eventSource.onmessage = (event) => {
+        try {
+          const parsedEvent = JSON.parse(event.data);
+          const updatedResponse = processStreamEvent(currentResponse, parsedEvent);
+          
+          // Update current response
+          currentResponse = updatedResponse;
+          
+          // Update message in state
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === assistantMessageId
+                ? { ...msg, content: updatedResponse }
+                : msg
+            )
+          );
+          
+          // Check if response is complete
+          if (updatedResponse.isComplete) {
+            eventSource.close();
+            setIsLoading(false);
+          }
+          
+          // Check for errors
+          if (updatedResponse.error) {
+            setError(updatedResponse.error);
+            eventSource.close();
+            setIsLoading(false);
+          }
+        } catch (error) {
+          console.error('Error processing event:', error);
+          setError('Error processing response');
+          eventSource.close();
+          setIsLoading(false);
+        }
+      };
+      
+      // Handle errors
+      eventSource.onerror = (error) => {
+        console.error('EventSource error:', error);
+        setError('Connection error. Please try again.');
+        eventSource.close();
+        setIsLoading(false);
+      };
+      
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setError(error.message || 'An error occurred. Please try again.');
+      setIsLoading(false);
+      
+      // Update assistant message with error
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === assistantMessageId
+            ? { 
+                ...msg, 
+                content: { 
+                  text: 'Sorry, I encountered an error. Please try again later.', 
+                  tools: [],
+                  isComplete: true,
+                  error: error.message 
+                } 
+              }
+            : msg
+        )
+      );
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-blue-600 text-white p-4">
+        <h1 className="text-xl font-semibold">SuperCar Virtual Sales Assistant</h1>
+        <p className="text-sm opacity-80">Chat with Lex about our latest car models and schedule a test drive</p>
+      </div>
+      
+      {error && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
+        </div>
+      )}
+      
+      <MessageList messages={messages} />
+      
+      <MessageInput onSendMessage={handleSendMessage} isLoading={isLoading} />
+    </div>
+  );
+};
+
+export default ChatInterface;

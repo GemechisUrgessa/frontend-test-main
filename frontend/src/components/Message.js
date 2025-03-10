@@ -47,3 +47,50 @@ const Message = ({ message }) => {
 };
 
 export default Message;
+import React from 'react';
+import ToolOutput from './ToolOutput';
+
+const Message = ({ message }) => {
+  const { role, content, timestamp } = message;
+  const isAssistant = role === 'assistant';
+  
+  // Format timestamp
+  const formattedTime = new Date(timestamp).toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
+  
+  return (
+    <div className={`flex ${isAssistant ? 'justify-start' : 'justify-end'} mb-4`}>
+      <div className={`max-w-[80%] ${isAssistant ? 'bg-gray-100' : 'bg-blue-500 text-white'} p-3 rounded-lg`}>
+        {isAssistant ? (
+          <div>
+            {content.text && <div className="whitespace-pre-wrap">{content.text}</div>}
+            
+            {content.tools && content.tools.length > 0 && (
+              <div className="mt-2">
+                {content.tools.map((tool, index) => (
+                  <ToolOutput key={index} tool={tool} />
+                ))}
+              </div>
+            )}
+            
+            {content.error && (
+              <div className="text-red-500 mt-2">
+                Error: {content.error}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="whitespace-pre-wrap">{content}</div>
+        )}
+        
+        <div className={`text-xs mt-1 text-right ${isAssistant ? 'text-gray-500' : 'text-blue-200'}`}>
+          {formattedTime}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Message;
