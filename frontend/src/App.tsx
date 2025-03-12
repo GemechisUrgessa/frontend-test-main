@@ -1,20 +1,18 @@
-
-import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import ChatInterface from './components/ChatInterface';
-import './App.css';
+import { useEffect, useState } from "react";
+import ChatInterface from "./components/ChatInterface";
+import { v4 as uuidv4 } from "uuid";
+import "./App.css";
 
 function App() {
-  const [sessionId, setSessionId] = useState('');
+  const [sessionId, setSessionId] = useState("");
 
   useEffect(() => {
-    // Create a new session ID if one doesn't exist
-    const storedSessionId = localStorage.getItem('sessionId');
+    const storedSessionId = localStorage.getItem("sessionId");
     if (storedSessionId) {
       setSessionId(storedSessionId);
     } else {
       const newSessionId = uuidv4();
-      localStorage.setItem('sessionId', newSessionId);
+      localStorage.setItem("sessionId", newSessionId);
       setSessionId(newSessionId);
     }
   }, []);
@@ -34,19 +32,6 @@ function App() {
           &copy; 2023 SuperCar Dealerships
         </p>
       </footer>
-    </div>
-  );
-}
-
-export default App;
-import React from 'react';
-import ChatInterface from './components/ChatInterface';
-import './App.css';
-
-function App() {
-  return (
-    <div className="App min-h-screen bg-gray-100 p-4">
-      <ChatInterface />
     </div>
   );
 }

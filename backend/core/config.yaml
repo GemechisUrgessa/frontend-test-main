@@ -4,6 +4,11 @@ llms:
     model_id: 'llama3-70b-8192'
     aws_region: 'us-east-1'
     temperature: 0
+  fallback:
+    type: 'groq'
+    model_id: 'llama3-70b-8192'
+    aws_region: 'us-east-1'
+    temperature: 0
 #  main:
 #    type: 'openai'
 #    model_id: 'gpt-4o'
@@ -14,11 +19,11 @@ llms:
 #    model_id: 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'
 #    aws_region: 'us-east-1'
 #    temperature: 0
-  fallback:
-    type: 'bedrock'
-    model_id: 'us.anthropic.claude-3-5-sonnet-20240620-v1:0'
-    aws_region: 'us-east-2'
-    temperature: 0
+  # fallback:
+  #   type: 'bedrock'
+  #   model_id: 'us.anthropic.claude-3-5-sonnet-20240620-v1:0'
+  #   aws_region: 'us-east-2'
+  #   temperature: 0
 
 #  main:
 #    type: 'openai'

@@ -1,72 +1,54 @@
+# React + TypeScript + Vite
 
-# SuperCar Virtual Sales Assistant - Frontend
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-This is the frontend application for the SuperCar Virtual Sales Assistant, a chat interface that interacts with an AI agent through a backend API.
+Currently, two official plugins are available:
 
-## Features
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-- Chat interface for communicating with the AI assistant
-- Real-time streaming of AI responses
-- Custom UI components for different tool outputs:
-  - Weather information
-  - Dealership address
-  - Appointment availability (time slots)
-  - Appointment confirmation
-- Responsive design for desktop and mobile devices
-- Session management for conversation continuity
+## Expanding the ESLint configuration
 
-## Tech Stack
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-- React.js
-- Tailwind CSS
-- ESS (Server-Sent Events) for real-time communication
-
-## Running the Application
-
-### Prerequisites
-
-- Node.js (v14 or later)
-- npm or yarn
-- Docker (optional)
-
-### Development
-
-1. Install dependencies:
-```bash
-cd frontend
-npm install
+```js
+export default tseslint.config({
+  extends: [
+    // Remove ...tseslint.configs.recommended and replace with this
+    ...tseslint.configs.recommendedTypeChecked,
+    // Alternatively, use this for stricter rules
+    ...tseslint.configs.strictTypeChecked,
+    // Optionally, add this for stylistic rules
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
 
-2. Start the development server:
-```bash
-npm start
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default tseslint.config({
+  plugins: {
+    // Add the react-x and react-dom plugins
+    'react-x': reactX,
+    'react-dom': reactDom,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended typescript rules
+    ...reactX.configs['recommended-typescript'].rules,
+    ...reactDom.configs.recommended.rules,
+  },
+})
 ```
-
-The application will be available at http://localhost:3000.
-
-### Using Docker
-
-To run the application using Docker:
-
-```bash
-cd frontend
-docker build -t supercar-assistant-frontend .
-docker run -p 3000:3000 supercar-assistant-frontend
-```
-
-### Using Docker Compose
-
-To run both the frontend and backend:
-
-```bash
-cd infrastructure
-docker-compose up
-```
-
-## Implementation Details
-
-- The application maintains a session ID for conversation persistence
-- Messages are displayed in real-time as they stream from the backend
-- Each tool output has a custom UI component for better visualization
-- The UI shows loading indicators when tools are being used
-- The design is responsive and works on all device sizes

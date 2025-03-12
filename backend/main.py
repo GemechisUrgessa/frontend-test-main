@@ -68,7 +68,7 @@ async def query_endpoint(payload: QueryRequest, llm: BaseLLM = Depends(get_main_
     """
     Query the agent with a text input.
     """
-
+    print("Query endpoint")
     session_id = payload.session_id
     query = payload.query
 
@@ -98,7 +98,9 @@ async def query_endpoint(payload: QueryRequest, llm: BaseLLM = Depends(get_main_
 
     #generator = llm.async_stream_inference(chat_history)
     generator = get_generator(llm, fallback_llm, chat_history)
+    print("hereee",str(generator))
     serialized_generator = serialize_stream_events(generator)
+    print("hereee",str(serialized_generator))
     return EventSourceResponse(serialized_generator)
 
 

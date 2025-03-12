@@ -174,6 +174,7 @@ class GroqLLM(BaseLLM):
         gathered = None
 
         async for chunk in self.llm.astream(messages):
+            print(f"DEBUG: Got chunk: {chunk}")
             if gathered is None:
                 gathered = chunk
             else:
